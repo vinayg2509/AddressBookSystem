@@ -7,7 +7,7 @@ export class ContactPerson {
     public city: string,
     public state: string,
     public zipcode: number,
-    public phoneNumber: string,  // changed from number to string
+    public phoneNumber: string,  
     public email: string
   ) {
     this.validateZipcode(zipcode);
