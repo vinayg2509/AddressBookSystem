@@ -57,6 +57,8 @@ class AddressBookMain {
     const nameToEdit = this.promptInput("Enter first name to edit: ");
     this.addressBook.editContact(nameToEdit);              // ✅ Edit contact
     this.addressBook.getAllContacts();                     // ✅ Show all after editing
+    const nameToDelete=this.promptInput("Enter name to delete")
+    this.addressBook.deleteContact(nameToDelete);
   }
 }
 

@@ -86,4 +86,24 @@ export class AddressBook {
       return input;
     }
   }
+   deleteContact(firstName: string): boolean {
+    const contactIndex = this.contacts.findIndex(c => c.firstName === firstName);
+
+    if (contactIndex === -1) {
+      console.log("❌ Contact not found.");
+      return false;
+    }
+
+    const confirm = this.prompt("Are you sure you want to delete this contact? (yes/no): ").toLowerCase();
+    if (confirm !== "yes") {
+      console.log("✋ Deletion cancelled.");
+      return false;
+    }
+
+    this.contacts.splice(contactIndex, 1);
+    console.log("🗑️ Contact deleted successfully.");
+    return true;
+  }
+
+  
 }
