@@ -43,6 +43,7 @@ export class ContactPerson {
   }
 
   updateDetails(): void {
+    this.lastName=IOUtils.prompt("Enter last name")
     this.address = IOUtils.prompt("Enter new Address: ");
     this.city = IOUtils.prompt("Enter new City: ");
     this.state = IOUtils.prompt("Enter new State: ");
@@ -53,5 +54,9 @@ export class ContactPerson {
 
   toString(): string {
     return `${this.firstName} ${this.lastName}, ${this.address}, ${this.city}, ${this.state}, ${this.zipcode}, ${this.phoneNumber}, ${this.email}`;
+  }
+  getPhoneNumber():string
+  {
+    return this.phoneNumber
   }
 }

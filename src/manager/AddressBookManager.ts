@@ -10,15 +10,22 @@ export class AddressBookManager {
     return IOUtils.prompt(msg);
   }
 
-  addAddressBook(): void {
+ addAddressBook(): void {
+  while (true) {
     const name = IOUtils.prompt("Enter new Address Book name: ");
-    if (this.addressBooks.has(name)) {
-      IOUtils.log(`Address Book '${name}' already exists.`, false);
-      return;
+
+    if (!name) {
+      IOUtils.log(" Name cannot be empty.");
+    } else if (this.addressBooks.has(name)) {
+      IOUtils.log(` Address Book '${name}' already exists.`);
+    } else {
+      this.addressBooks.set(name, new AddressBook());
+      IOUtils.log(` New Address Book '${name}' created.`);
+      break; // ✅ sStop loop after successful creation
     }
-    this.addressBooks.set(name, new AddressBook());
-    IOUtils.log(`New Address Book '${name}' created.`);
   }
+}
+
 
  selectAddressBook(): AddressBook | null {
   if (this.addressBooks.size === 0) {

@@ -1,15 +1,21 @@
 // File: src/model/AddressBook.ts
 import { ContactPerson } from "./ContactPerson";
-import { IOUtils } from "../utils/IOUtils.ts";
-
-
+import { IOUtils } from "../utils/IOUtils";
 
 export class AddressBook {
   private contacts: ContactPerson[] = [];
-
+  
   addContact(contact: ContactPerson): void {
-    this.contacts.push(contact);
-    IOUtils.log("Contact added successfully.");
+    const isDuplicate=this.contacts.some(c=>c.getPhoneNumber()===contact.getPhoneNumber())
+    if(isDuplicate)
+    {
+      IOUtils.prompt(" Duplicate Entry: ${contacts.phoneNumber} already exists in this Address Book.")
+    }
+    else
+    {
+      this.contacts.push(contact);
+      IOUtils.log("Contact added successfully.");
+    }
   }
 
   getAllContacts(): void {
