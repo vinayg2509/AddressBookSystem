@@ -13,9 +13,11 @@ class AddressBookMain {
 
   // Main function that runs the application
   run(): void {
+
     this.welcomeToAddressBook(); // Display welcome message once at start
 
     // Infinite loop to keep displaying the main menu until user chooses to exit
+
     while (true) {
       console.log("\n📁 MAIN MENU");
       console.log("1. Create Address Book");
@@ -48,6 +50,9 @@ class AddressBookMain {
           console.log("❗ Invalid choice. Try again.");
       }
     }
+
+   
+
   }
 }
 
