@@ -55,8 +55,8 @@ export class ContactPerson {
   toString(): string {
     return `${this.firstName} ${this.lastName}, ${this.address}, ${this.city}, ${this.state}, ${this.zipcode}, ${this.phoneNumber}, ${this.email}`;
   }
-  getPhoneNumber():string
+  getFullName():string
   {
-    return this.phoneNumber
+    return `${this.firstName} ${this.lastName}`
   }
 }
