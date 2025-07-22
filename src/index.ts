@@ -36,18 +36,9 @@ class AddressBookMain {
           console.log("❗ Invalid choice. Try again.");
       }
     }
-=======
-    // const personContact = this.getContactFromUser();       // ✅ Valid contact input
-    // this.addressBook.addContact(personContact);            // ✅ Add contact
-    // this.addressBook.getAllContacts();                     // ✅ Show all
-    // const nameToEdit = this.promptInput("Enter first name to edit: ");
-    // this.addressBook.editContact(nameToEdit);              // ✅ Edit contact
-    // this.addressBook.getAllContacts();                     // ✅ Show all after editing
-    // const nameToDelete=this.promptInput("Enter name to delete")
-    // this.addressBook.deleteContact(nameToDelete);
-    this.addressBook.addMultipleContact()
-  
->>>>>>> UC5-add-multiple-contact
+
+   
+
   }
 }
 
