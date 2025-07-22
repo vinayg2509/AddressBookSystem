@@ -33,16 +33,8 @@ export class AddressBook {
    * Displays all contacts in the address book.
    * If no contacts exist, shows an appropriate message.
    */
-  getAllContacts(): void {
-    if (this.contacts.length === 0) {
-      IOUtils.log("📭 No contacts available.", false);
-      return;
-    }
-
-    IOUtils.log("📒 Contact List:");
-    this.contacts.forEach((contact, i) => {
-      console.log(`${i + 1}. ${contact.toString()}`);
-    });
+  getAllContacts(): ContactPerson[] {
+    return this.contacts;
   }
 
   /**

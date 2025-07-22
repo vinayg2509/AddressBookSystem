@@ -5,7 +5,6 @@ import * as readline from "readline-sync";
 
 // Utility class to handle user input and formatted console logging
 export class IOUtils {
-  
   /**
    * Prompt the user for input using a custom message.
    * @param message - The prompt message shown to the user.

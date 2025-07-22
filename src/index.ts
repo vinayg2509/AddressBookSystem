@@ -1,5 +1,7 @@
 // File: src/main/AddressBookMain.ts
 import { AddressBookManager } from "./manager/AddressBookManager";
+import { ContactPerson } from "./model/ContactPerson";
+import { IOUtils } from "./utils/IOUtils";
 
 // Main class that serves as the entry point for the Address Book Program
 class AddressBookMain {
@@ -8,24 +10,25 @@ class AddressBookMain {
 
   // Displays a welcome message to the user
   welcomeToAddressBook(): void {
-    console.log("👋 Welcome to the Address Book Program");
+    IOUtils.log("👋 Welcome to the Address Book Program");
   }
 
   // Main function that runs the application
   run(): void {
-
     this.welcomeToAddressBook(); // Display welcome message once at start
 
     // Infinite loop to keep displaying the main menu until user chooses to exit
 
     while (true) {
-      console.log("\n📁 MAIN MENU");
-      console.log("1. Create Address Book");
-      console.log("2. Select Existing Address Book");
-      console.log("3. Exit");
+      IOUtils.log("\n📁 MAIN MENU");
+      IOUtils.log("1. Create Address Book");
+      IOUtils.log("2. Select Existing Address Book");
+      IOUtils.log("3. Exit");
 
       // Prompt user to enter their choice and convert input to number
-      const choice = parseInt(this.addressBookManager.prompt("Enter your choice: "));
+      const choice = parseInt(
+        this.addressBookManager.prompt("Enter your choice: ")
+      );
 
       // Perform action based on user's choice
       switch (choice) {
@@ -43,16 +46,14 @@ class AddressBookMain {
           break;
         case 3:
           // Exit the program
-          console.log("👋 Exiting Address Book Program.");
+          IOUtils.log("👋 Exiting Address Book Program.");
           return;
+
         default:
           // Handle invalid inputs
-          console.log("❗ Invalid choice. Try again.");
+          IOUtils.log("❗ Invalid choice. Try again.");
       }
     }
-
-   
-
   }
 }
 

@@ -2,7 +2,6 @@
 
 // Validator class contains static methods for validating user inputs
 export class Validator {
-
   /**
    * Validates names (First Name, Last Name, and Address Book Name).
    * - Must start with a capital letter.

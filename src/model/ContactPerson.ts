@@ -27,7 +27,10 @@ export class ContactPerson {
    */
   private getValidZipcode(zip: number): number {
     while (!Validator.isZipcodeValid(zip)) {
-      IOUtils.log("Invalid Zipcode! It should be a 6-digit number not starting with 0.", false);
+      IOUtils.log(
+        "Invalid Zipcode! It should be a 6-digit number not starting with 0.",
+        false
+      );
       zip = parseInt(IOUtils.prompt("Enter valid Zipcode: "));
     }
     return zip;
@@ -66,8 +69,12 @@ export class ContactPerson {
     this.address = IOUtils.prompt("Enter new Address: ");
     this.city = IOUtils.prompt("Enter new City: ");
     this.state = IOUtils.prompt("Enter new State: ");
-    this.zipcode = this.getValidZipcode(parseInt(IOUtils.prompt("Enter new Zipcode: ")));
-    this.phoneNumber = this.getValidPhoneNumber(IOUtils.prompt("Enter new Phone Number: "));
+    this.zipcode = this.getValidZipcode(
+      parseInt(IOUtils.prompt("Enter new Zipcode: "))
+    );
+    this.phoneNumber = this.getValidPhoneNumber(
+      IOUtils.prompt("Enter new Phone Number: ")
+    );
     this.email = this.getValidEmail(IOUtils.prompt("Enter new Email: "));
   }
 
