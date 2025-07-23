@@ -150,11 +150,17 @@ export class AddressBookManager {
           addressBook.addContact(contact);
           break;
 
-        case "2":
-          // Display all contacts in the address book
-          addressBook.getAllContacts();
-          break;
-
+         case "2":
+            const contacts = addressBook.getAllContacts();
+            if (contacts.length === 0) {
+              IOUtils.log("📭 No contacts available in this Address Book.");
+            } else {
+              IOUtils.log("📒 All Contacts:");
+              contacts.forEach((contact, index) => {
+                IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
+              });
+            }
+            break;
         case "3":
           // Edit a contact by first name
           const nameToEdit = IOUtils.prompt(
