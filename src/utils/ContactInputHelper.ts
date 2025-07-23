@@ -67,31 +67,25 @@ export class ContactInputHelper {
     return new ContactPerson(firstName, lastName, address, city, state, zip, phone, email);
   }
 
-   static promptAndValidateOptional(
-    message: string,
-    validator: (input: string) => boolean,
+  static promptAndValidateOptional(
+    promptMsg: string,
+    validationFn: (input: string) => boolean,
     defaultValue: string
   ): string {
-    while (true) {
-      const input = IOUtils.prompt(message).trim();
-      if (input === "") return defaultValue;
-      if (validator(input)) return input;
-      IOUtils.log("❌ Invalid input. Please try again.", false);
+    const input = IOUtils.prompt(promptMsg).trim();
+    if (input === "") return defaultValue;
+
+    if (!validationFn(input)) {
+      throw new Error("❌ Invalid input. Please try again.");
     }
-  } // Validation wrappers using Validator
-  static validateName(input: string): boolean {
-    return Validator.isNameValid(input);
+
+    return input;
   }
-  static validateAddress(input: string): boolean {
-    return Validator.isAddressValid(input);
-  }
-  static validateZip(input: string): boolean {
-    return Validator.isZipValid(input);
-  }
-  static validatePhoneNumber(input: string): boolean {
-    return Validator.isPhoneNumberValid(input);
-  }
-  static validateEmail(input: string): boolean {
-    return Validator.isEmailValid(input);
-  }
+
+  // Directly reuse Validator methods
+  static validateName = Validator.isNameValid;
+  static validateAddress = Validator.isAddressValid;
+  static validateZip = Validator.isZipValid;
+  static validatePhoneNumber = Validator.isPhoneNumberValid;
+  static validateEmail = Validator.isEmailValid;
 }

@@ -1,6 +1,5 @@
 // File: src/main/AddressBookMain.ts
 import { AddressBookManager } from "./manager/AddressBookManager";
-import { ContactPerson } from "./model/ContactPerson";
 import { IOUtils } from "./utils/IOUtils";
 
 // Main class that serves as the entry point for the Address Book Program
@@ -36,7 +35,15 @@ class AddressBookMain {
             const nameToAdd = this.addressBookManager.prompt("Enter name for new Address Book: ");
             this.addressBookManager.addAddressBook(nameToAdd);
             break;
+            const nameToAdd = this.addressBookManager.prompt("Enter name for new Address Book: ");
+            this.addressBookManager.addAddressBook(nameToAdd);
+            break;
         case 2:
+        const selectedBook = this.addressBookManager.selectAddressBook();
+        if (selectedBook) {
+          this.addressBookManager.manageAddressBook(selectedBook);
+        }
+         break;
         const selectedBook = this.addressBookManager.selectAddressBook();
         if (selectedBook) {
           this.addressBookManager.manageAddressBook(selectedBook);

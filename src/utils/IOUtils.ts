@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 import readlineSync from "readline-sync";
 import { ContactPerson } from "../model/ContactPerson";
 
+=======
+
+import readlineSync from "readline-sync";
+import { ContactPerson } from "../model/ContactPerson";
+
+>>>>>>> UC9-view-contact-by-city-state-multiple-book
 export class IOUtils 
 {
   

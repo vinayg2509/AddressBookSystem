@@ -10,6 +10,7 @@ import { Validator } from "../utils/Validator";
 // Class responsible for managing multiple address books and operations on them
 export class AddressBookManager {
   private addressBooks: Map<string, AddressBook> = new Map();
+
   
 
   prompt(msg: string): string {
@@ -18,7 +19,7 @@ export class AddressBookManager {
 
   addAddressBook(name: string): void {
     if (!Validator.isNameValid(name)) {
-      IOUtils.log("Invalid Address Book name must Start with capital, min 3 letters).", false);
+      IOUtils.log("Invalid Address Book name.", false);
       return;
     }
 
@@ -30,28 +31,7 @@ export class AddressBookManager {
     this.addressBooks.set(name, new AddressBook());
     IOUtils.log(`Created Address Book: ${name}`);
   }
-
-  getAddressBook(name: string): AddressBook | undefined {
-    return this.addressBooks.get(name);
-  }
-
-  findInAllBooksByCity(city: string): ContactPerson[] {
-    const allContacts: ContactPerson[] = [];
-    this.addressBooks.forEach(book => {
-      allContacts.push(...book.findByCity(city));
-    });
-    return allContacts;
-  }
-
-  findInAllBooksByState(state: string): ContactPerson[] {
-    const allContacts: ContactPerson[] = [];
-    this.addressBooks.forEach(book => {
-      allContacts.push(...book.findByState(state));
-    });
-    return allContacts;
-  }
-
- selectAddressBook(): string | undefined {
+  selectAddressBook(): string | undefined {
   if (this.addressBooks.size === 0) {
     IOUtils.log("No address books available.", false);
     return;
@@ -72,7 +52,37 @@ export class AddressBookManager {
   return selectedName;
 }
 
+  getBook(name: string): AddressBook | undefined {
+    return this.addressBooks.get(name);
+  }
 
+  findInAllBooksByCity(city: string): ContactPerson[] {
+    const allContacts: ContactPerson[] = [];
+    this.addressBooks.forEach(book => {
+      allContacts.push(...book.findByCity(city));
+    });
+    return allContacts;
+  }
+
+  findInAllBooksByState(state: string): ContactPerson[] {
+    const allContacts: ContactPerson[] = [];
+    this.addressBooks.forEach(book => {
+      allContacts.push(...book.findByState(state));
+    });
+    return allContacts;
+  }
+
+  listAllBooks(): void {
+    if (this.addressBooks.size === 0) {
+      IOUtils.log("No address books available.", false);
+      return;
+    }
+
+    IOUtils.log("Available Address Books:");
+    this.addressBooks.forEach((_, name) => {
+      IOUtils.log(`📘 ${name}`);
+    });
+  }
 
   deleteBook(name: string): void {
     if (this.addressBooks.delete(name)) {
@@ -83,7 +93,7 @@ export class AddressBookManager {
   }
 
   manageAddressBook(name: string): void {
-    const addressBook = this.getAddressBook(name);
+    const addressBook = this.getBook(name);
     if (!addressBook) {
       IOUtils.log("Address Book not found.", false);
       return;
@@ -92,11 +102,11 @@ export class AddressBookManager {
     let option: string;
     do {
       console.log("\n📘 Managing Address Book");
-      console.log("1. Add Contact\n2. View Contacts\n3. Edit Contact\n4. Delete Contact\n5. Find by City\n6. Find by State\n7. Exit");
+      console.log("1. Add Contact\n2. View Contacts\n3. Edit Contact\n4. Delete Contact\n5. Find by City\n6. Find by State\n7. Find in All Books by City\n8. Find in All Books by State\n9. Exit");
       option = IOUtils.prompt("Choose an option: ");
 
       switch (option) {
-       case "1":
+         case "1":
         const contact = ContactInputHelper.getValidatedContact();
         if (contact) {
           addressBook.addContact(contact);
@@ -126,88 +136,20 @@ export class AddressBookManager {
           break;
 
         case "7":
+          const cityAll = IOUtils.prompt("Enter City to search across all books: ");
+          IOUtils.displayContactsList(`All Books - Contacts in City: ${cityAll}`, this.findInAllBooksByCity(cityAll));
+          break;
+        case "8":
+          const stateAll = IOUtils.prompt("Enter State to search across all books: ");
+          IOUtils.displayContactsList(`All Books - Contacts in State: ${stateAll}`, this.findInAllBooksByState(stateAll));
+          break;
+        case "9":
           IOUtils.log("Exiting address book management.");
           break;
         default:
           IOUtils.log("❌ Invalid option. Please try again.", false);
       }
-    } while (option !== "7");
-  }
-
-  /**
-   * Groups contacts by city within a single book
-   */
-  groupByCitySingleBook(bookName: string): Map<string, ContactPerson[]> {
-    const cityMap = new Map<string, ContactPerson[]>();
-    const book = this.getAddressBook(bookName);
-    if (!book) {
-      IOUtils.log(`❌ Address Book '${bookName}' not found.`);
-      return cityMap;
-    }
-    book.getAllContacts().forEach((person) => {
-      const city = person.city;
-      if (!cityMap.has(city)) {
-        cityMap.set(city, []);
-      }
-      cityMap.get(city)!.push(person);
-    });
-    return cityMap;
-  }
-
-  /**
-   * Displays grouped contacts by city (single book)
-   */
-  displayGroupedByCitySingleBook(bookName: string): void {
-    const cityGroups = this.groupByCitySingleBook(bookName);
-    if (cityGroups.size === 0) {
-      IOUtils.log("📭 No contacts available to group by city.");
-      return;
-    }
-    IOUtils.log(`🏙️ Contacts in '${bookName}' grouped by City:`);
-    cityGroups.forEach((contacts, city) => {
-      IOUtils.log(`\n🌆 City: ${city}`);
-      contacts.forEach((contact, index) => {
-        IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
-      });
-    });
-  }
-
-  /**
-   * Groups contacts by state within a single book
-   */
-  groupByStateSingleBook(bookName: string): Map<string, ContactPerson[]> {
-    const stateMap = new Map<string, ContactPerson[]>();
-    const book = this.getAddressBook(bookName);
-    if (!book) {
-      IOUtils.log(`❌ Address Book '${bookName}' not found.`);
-      return stateMap;
-    }
-    book.getAllContacts().forEach((person) => {
-      const state = person.state;
-      if (!stateMap.has(state)) {
-        stateMap.set(state, []);
-      }
-      stateMap.get(state)!.push(person);
-    });
-    return stateMap;
-  }
-
-  /**
-   * Displays grouped contacts by state (single book)
-   */
-  displayGroupedByStateSingleBook(bookName: string): void {
-    const stateGroups = this.groupByStateSingleBook(bookName);
-    if (stateGroups.size === 0) {
-      IOUtils.log("📭 No contacts available to group by state.");
-      return;
-    }
-    IOUtils.log(`🌎 Contacts in '${bookName}' grouped by State:`);
-    stateGroups.forEach((contacts, state) => {
-      IOUtils.log(`\n🗺️ State: ${state}`);
-      contacts.forEach((contact, index) => {
-        IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
-      });
-    });
+    } while (option !== "9");
   }
 
   /**
