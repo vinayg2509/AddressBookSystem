@@ -33,16 +33,15 @@ class AddressBookMain {
       // Perform action based on user's choice
       switch (choice) {
         case 1:
-          // Add a new address book
-          this.addressBookManager.addAddressBook();
-          break;
+            const nameToAdd = this.addressBookManager.prompt("Enter name for new Address Book: ");
+            this.addressBookManager.addAddressBook(nameToAdd);
+            break;
         case 2:
-          // Select an existing address book to manage
-          const selectedBook = this.addressBookManager.selectAddressBook();
-          if (selectedBook) {
-            // Launch contact management options for the selected address book
-            this.addressBookManager.manageAddressBook(selectedBook);
-          }
+        const selectedBook = this.addressBookManager.selectAddressBook();
+        if (selectedBook) {
+          this.addressBookManager.manageAddressBook(selectedBook);
+        }
+ 
           break;
         case 3:
           // Exit the program

@@ -1,86 +1,97 @@
 // File: src/utils/ContactInputHelper.ts
 
+import { ContactPerson } from "../model/ContactPerson";
 import { IOUtils } from "./IOUtils";
 import { Validator } from "./Validator";
-import { ContactPerson } from "../model/ContactPerson";
 
 export class ContactInputHelper {
-  // Used when creating a new contact
-  static getValidatedContact(): ContactPerson {
-    const firstName = this.promptValid("Enter First Name: ", Validator.isNameValid, 
-      "❌ Invalid. First Name must start with a capital and be at least 3 characters: ");
+  static getValidatedContact(): ContactPerson | null {
     
-    const lastName = this.promptValid("Enter Last Name: ", Validator.isNameValid, 
-      "❌ Invalid. Last Name must start with a capital and be at least 3 characters: ");
-    
-    const address = this.promptValid("Enter Address: ", Validator.isAddressValid, 
-      "❌ Invalid Address. Must be at least 3 characters and contain only letters, numbers, spaces, and # , / . -");
-    
-    const city = this.promptValid("Enter City: ", Validator.isCityOrStateValid, 
-      "❌ Invalid City. Must be at least 3 characters and contain only letters, spaces, and optionally -, . or /");
-    
-    const state = this.promptValid("Enter State: ", Validator.isCityOrStateValid, 
-      "❌ Invalid State. Must be at least 3 characters and contain only letters, spaces, and optionally -, . or /");
+    const firstName = Validator.promptAndValidate(
+      "Enter First Name: ",
+      Validator.isNameValid,
+      "❌ Invalid First Name (Start with capital, min 3 letters)"
+    );
+    if (!firstName) return null;
 
-    const zipcode = this.promptValidNumber("Enter Zipcode: ", Validator.isZipcodeValid, 
-      "❌ Invalid Zipcode. Must be exactly 6 digits.");
+    const lastName = Validator.promptAndValidate(
+      "Enter Last Name: ",
+      Validator.isNameValid,
+      "❌ Invalid Last Name"
+    );
+    if (!lastName) return null;
 
-    const phoneNumber = this.promptValid("Enter Phone Number: ", Validator.isPhoneNumberValid, 
-      "❌ Invalid Phone Number. Must be 10 digits starting with 0-9.");
+    const address = Validator.promptAndValidate(
+      "Enter Address: ",
+      Validator.isAddressValid,
+      "❌ Invalid Address (Min 3 chars, # ,/ and ,valid symbols allowed)"
+    );
+    if (!address) return null;
 
-    const email = this.promptValid("Enter Email: ", Validator.isEmailValid, 
-      "❌ Invalid Email format.");
+    const city = Validator.promptAndValidate(
+      "Enter City: ",
+      Validator.isNameValid,
+      "❌ Invalid City"
+    );
+    if (!city) return null;
 
-    return new ContactPerson(firstName, lastName, address, city, state, zipcode, phoneNumber, email);
+    const state = Validator.promptAndValidate(
+      "Enter State: ",
+      Validator.isNameValid,
+      "❌ Invalid State"
+    );
+    if (!state) return null;
+
+    const zipStr = Validator.promptAndValidate(
+      "Enter Zipcode: ",
+      Validator.isZipValid,
+      "❌ Invalid Zipcode (Must be 6 digits)"
+    );
+    if (!zipStr) return null;
+    const zip = parseInt(zipStr);
+
+    const phone = Validator.promptAndValidate(
+      "Enter Phone Number: ",
+      Validator.isPhoneNumberValid,
+      "❌ Invalid Phone Number (10 digits only with +91 )"
+    );
+    if (!phone) return null;
+
+    const email = Validator.promptAndValidate(
+      "Enter Email: ",
+      Validator.isEmailValid,
+      "❌ Invalid Email"
+    );
+    if (!email) return null;
+
+    return new ContactPerson(firstName, lastName, address, city, state, zip, phone, email);
   }
 
-  // Used for updating an existing contact
-  static updateContactFields(contact: ContactPerson): void {
-    contact.lastName = this.promptValid("Enter Last Name: ", Validator.isNameValid, 
-      "❌ Invalid. Last Name must start with a capital and be at least 3 characters: ");
-
-    contact.address = this.promptValid("Enter Address: ", Validator.isAddressValid, 
-      "❌ Invalid Address. Must be at least 3 characters and contain only letters, numbers, spaces, and # , / . -");
-
-    contact.city = this.promptValid("Enter City: ", Validator.isCityOrStateValid, 
-      "❌ Invalid City. Must be at least 3 characters and contain only letters, spaces, and optionally -, . or /");
-
-    contact.state = this.promptValid("Enter State: ", Validator.isCityOrStateValid, 
-      "❌ Invalid State. Must be at least 3 characters and contain only letters, spaces, and optionally -, . or /");
-
-    contact.zipcode = this.promptValidNumber("Enter Zipcode: ", Validator.isZipcodeValid, 
-      "❌ Invalid Zipcode. Must be exactly 6 digits.");
-
-    contact.phoneNumber = this.promptValid("Enter Phone Number: ", Validator.isPhoneNumberValid, 
-      "❌ Invalid Phone Number. Must be 10 digits starting with 0-9.");
-
-    contact.email = this.promptValid("Enter Email: ", Validator.isEmailValid, 
-      "❌ Invalid Email format.");
-  }
-
-  // Prompt string input and validate with provided function
-  private static promptValid(
+   static promptAndValidateOptional(
     message: string,
-    validatorFn: (input: string) => boolean,
-    errorMsg: string
+    validator: (input: string) => boolean,
+    defaultValue: string
   ): string {
-    let input = IOUtils.prompt(message);
-    while (!validatorFn(input)) {
-      input = IOUtils.prompt(errorMsg);
+    while (true) {
+      const input = IOUtils.prompt(message).trim();
+      if (input === "") return defaultValue;
+      if (validator(input)) return input;
+      IOUtils.log("❌ Invalid input. Please try again.", false);
     }
-    return input;
+  } // Validation wrappers using Validator
+  static validateName(input: string): boolean {
+    return Validator.isNameValid(input);
   }
-
-  // Prompt numeric input and validate
-  private static promptValidNumber(
-    message: string,
-    validatorFn: (num: number) => boolean,
-    errorMsg: string
-  ): number {
-    let num = parseInt(IOUtils.prompt(message));
-    while (!validatorFn(num)) {
-      num = parseInt(IOUtils.prompt(errorMsg));
-    }
-    return num;
+  static validateAddress(input: string): boolean {
+    return Validator.isAddressValid(input);
+  }
+  static validateZip(input: string): boolean {
+    return Validator.isZipValid(input);
+  }
+  static validatePhoneNumber(input: string): boolean {
+    return Validator.isPhoneNumberValid(input);
+  }
+  static validateEmail(input: string): boolean {
+    return Validator.isEmailValid(input);
   }
 }
