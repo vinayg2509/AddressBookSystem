@@ -72,12 +72,20 @@ export class AddressBookManager {
     do {
       // Display the contact management menu
       console.log("\n📘 Managing Address Book");
-     console.log(
-          "1. Add Contact\n2. View Contacts\n3. Edit Contact\n4. Delete Contact" +
-          "\n5. Group by City (All Books)\n6. Group by State (All Books)" +
-          "\n8. Group by City (Single Book)\n9. Group by State (Single Book)" +
-          "\n10. Exit"
-        );
+     console.log(`
+1. Add Contact
+2. View Contacts
+3. Edit Contact
+4. Delete Contact
+5. Group by City (All Books)
+6. Group by State (All Books)
+7. Group by City (Single Book)
+8. Group by State (Single Book)
+9. Count by City (All Books)
+10. Count by State (All Books)
+11. Exit
+`);
+
 
       option = IOUtils.prompt("Choose an option: ");
 
@@ -154,18 +162,17 @@ export class AddressBookManager {
           addressBook.addContact(contact);
           break;
 
-         case "2":
-            const contacts = addressBook.getAllContacts();
-            if (contacts.length === 0) {
-              IOUtils.log("📭 No contacts available in this Address Book.");
-            } else {
-              IOUtils.log("📒 All Contacts:");
-              contacts.forEach((contact, index) => {
-                IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
-              });
-            }
-            break;
-
+        case "2":
+          const contacts = addressBook.getAllContacts();
+          if (contacts.length === 0) {
+            IOUtils.log("📭 No contacts available in this Address Book.");
+          } else {
+            IOUtils.log("📒 All Contacts:");
+            contacts.forEach((contact, index) => {
+              IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
+            });
+          }
+          break;
 
         case "3":
           // Edit a contact by first name
@@ -195,23 +202,31 @@ export class AddressBookManager {
           IOUtils.log("Exiting address book management.");
           break;
         case "8":
-          this.displayGroupedByCitySingleBook(IOUtils.prompt("Enter Address Book name: "));
+          this.displayGroupedByCitySingleBook(
+            IOUtils.prompt("Enter Address Book name: ")
+          );
           break;
 
         case "9":
-          this.displayGroupedByStateSingleBook(IOUtils.prompt("Enter Address Book name: "));
+          const cityCounts = this.countByCity();
+          this.displayCount(cityCounts, "City");
           break;
 
         case "10":
+          const stateCounts = this.countByState();
+          this.displayCount(stateCounts, "State");
+          break;
+
+        case "11":
           IOUtils.log("👋 Exiting address book management.");
-        break;
+          break;
 
         default:
-          IOUtils.log("Invalid option. Please try again.", false);
+          IOUtils.log("❌ Invalid option. Please try again.", false);
       }
     } while (option !== "10"); // Loop until user chooses to exit
   }
- getAddressBook(name: string): AddressBook | undefined {
+  getAddressBook(name: string): AddressBook | undefined {
     return this.addressBooks.get(name);
   }
   // Groups all contacts across all address books by their city names
@@ -303,7 +318,7 @@ export class AddressBookManager {
       });
     });
   }
-  
+
   // 👉 Group by City (Single Book)
   groupByCitySingleBook(bookName: string): Map<string, ContactPerson[]> {
     const cityMap = new Map<string, ContactPerson[]>();
@@ -315,7 +330,7 @@ export class AddressBookManager {
     }
 
     const contacts = book.getAllContacts();
-    contacts.forEach(person => {
+    contacts.forEach((person) => {
       const city = person.city;
       if (!cityMap.has(city)) {
         cityMap.set(city, []);
@@ -355,7 +370,7 @@ export class AddressBookManager {
     }
 
     const contacts = book.getAllContacts();
-    contacts.forEach(person => {
+    contacts.forEach((person) => {
       const state = person.state;
       if (!stateMap.has(state)) {
         stateMap.set(state, []);
@@ -381,6 +396,32 @@ export class AddressBookManager {
       contacts.forEach((contact, index) => {
         IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
       });
+    });
+  }
+  countByCity(): Map<string, number> {
+    const cityCount = new Map<string, number>();
+    this.addressBooks.forEach((book) => {
+      book.getAllContacts().forEach((person) => {
+        const city = person.city;
+        cityCount.set(city, (cityCount.get(city) || 0) + 1);
+      });
+    });
+    return cityCount;
+  }
+  countByState(): Map<string, number> {
+    const stateCount = new Map<string, number>();
+    this.addressBooks.forEach((book) => {
+      book.getAllContacts().forEach((person) => {
+        const state = person.state;
+        stateCount.set(state, (stateCount.get(state) || 0) + 1);
+      });
+    });
+    return stateCount;
+  }
+  displayCount(countMap: Map<string, number>, type: string): void {
+    console.log(`📈 Contact Count by ${type}:`);
+    countMap.forEach((count, key) => {
+      console.log(`🔸 ${type}: ${key} → ${count} contact(s)`);
     });
   }
 }
