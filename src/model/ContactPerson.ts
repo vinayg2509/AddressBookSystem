@@ -1,4 +1,5 @@
 
+
 export class ContactPerson {
   constructor(
     public firstName: string,

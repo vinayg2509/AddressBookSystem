@@ -1,3 +1,4 @@
+
 // File: src/utils/ContactInputHelper.ts
 
 import { ContactPerson } from "../model/ContactPerson";

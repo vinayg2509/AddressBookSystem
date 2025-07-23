@@ -1,3 +1,4 @@
+
 // File: src/manager/AddressBookManager.ts
 
 import { AddressBook } from "../model/AddressBook";
@@ -6,12 +7,9 @@ import { ContactInputHelper } from "../utils/ContactInputHelper";
 import { IOUtils } from "../utils/IOUtils";
 import { Validator } from "../utils/Validator";
 
-
 // Class responsible for managing multiple address books and operations on them
 export class AddressBookManager {
   private addressBooks: Map<string, AddressBook> = new Map();
-
-  
 
   prompt(msg: string): string {
     return IOUtils.prompt(msg);
@@ -134,7 +132,6 @@ export class AddressBookManager {
           const state = IOUtils.prompt("Enter State to search contacts: ");
           IOUtils.displayContactsList(`Contacts in State: ${state}`, addressBook.findByState(state));
           break;
-
         case "7":
           const cityAll = IOUtils.prompt("Enter City to search across all books: ");
           IOUtils.displayContactsList(`All Books - Contacts in City: ${cityAll}`, this.findInAllBooksByCity(cityAll));
@@ -147,47 +144,8 @@ export class AddressBookManager {
           IOUtils.log("Exiting address book management.");
           break;
         default:
-          IOUtils.log("❌ Invalid option. Please try again.", false);
+          IOUtils.log("Invalid option. Please try again.", false);
       }
     } while (option !== "9");
   }
-
-  /**
-   * Counts number of contacts in each city across all books
-   */
-  countByCity(): Map<string, number> {
-    const cityCount = new Map<string, number>();
-    this.addressBooks.forEach((book) => {
-      book.getAllContacts().forEach((person) => {
-        const city = person.city;
-        cityCount.set(city, (cityCount.get(city) || 0) + 1);
-      });
-    });
-    return cityCount;
-  }
-
-  /**
-   * Counts number of contacts in each state across all books
-   */
-  countByState(): Map<string, number> {
-    const stateCount = new Map<string, number>();
-    this.addressBooks.forEach((book) => {
-      book.getAllContacts().forEach((person) => {
-        const state = person.state;
-        stateCount.set(state, (stateCount.get(state) || 0) + 1);
-      });
-    });
-    return stateCount;
-  }
-
-  /**
-   * Utility to print city/state-wise contact counts
-   */
-  displayCount(countMap: Map<string, number>, type: string): void {
-    console.log(`📈 Contact Count by ${type}:`);
-    countMap.forEach((count, key) => {
-      console.log(`🔸 ${type}: ${key} → ${count} contact(s)`);
-    });
-  }
-
 }
