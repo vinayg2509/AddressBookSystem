@@ -5,6 +5,7 @@ import { IOUtils } from "../utils/IOUtils";
 
 // Class representing a single Address Book, containing a list of ContactPerson objects
 export class AddressBook {
+  [x: string]: any;
   // Internal list of contacts
   private contacts: ContactPerson[] = [];
 
@@ -66,5 +67,10 @@ export class AddressBook {
       IOUtils.log("❌ Contact not found.", false);
     }
   }
+  sortByFirstName(): ContactPerson[] {
+  const sorted = [...this.contacts];
+  sorted.sort((a, b) => a.firstName.localeCompare(b.firstName));
+  return sorted;
+}
   
 }

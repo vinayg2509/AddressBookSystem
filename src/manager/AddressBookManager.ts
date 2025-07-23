@@ -90,8 +90,9 @@ export class AddressBookManager {
 7. Group by City (Single Book)
 8. Group by State (Single Book)
 9. Count by City (All Books)
-10. Count by State (All Books)
-11. Exit
+10.Count by State (All Books)
+11.Sort contact by first name
+12. Exit
 `);
 
       option = IOUtils.prompt("Choose an option: ");
@@ -104,14 +105,7 @@ export class AddressBookManager {
 
         case "2":
           const contacts = addressBook.getAllContacts();
-          if (contacts.length === 0) {
-            IOUtils.log("📭 No contacts available in this Address Book.");
-          } else {
-            IOUtils.log("📒 All Contacts:");
-            contacts.forEach((contact, index) => {
-              IOUtils.log(`  ${index + 1}. ${contact.toString()}`);
-            });
-          }
+          IOUtils.displayContacts(contacts, "📒 All Contacts:");
           break;
 
         case "3":
@@ -155,6 +149,11 @@ export class AddressBookManager {
           break;
 
         case "11":
+          const sortedByName = addressBook.sortByFirstName();
+          IOUtils.displaySortedContacts(sortedByName, "📚 Contacts sorted by First Name:");
+          break
+
+        case "12":
           IOUtils.log("👋 Exiting address book management.");
           break;
 
@@ -354,4 +353,5 @@ export class AddressBookManager {
       console.log(`🔸 ${type}: ${key} → ${count} contact(s)`);
     });
   }
+
 }
