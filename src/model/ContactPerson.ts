@@ -1,5 +1,6 @@
 // File: src/model/ContactPerson.ts
 
+import { ContactInputHelper } from "../utils/ContactInputHelper";
 import { IOUtils } from "../utils/IOUtils";
 
 // Represents an individual contact in the address book
@@ -18,14 +19,9 @@ export class ContactPerson {
   /**
    * Allows the user to update contact details interactively.
    */
+  
   updateDetails(): void {
-    this.lastName    = IOUtils.prompt("Enter last name");
-    this.address     = IOUtils.prompt("Enter new Address: ");
-    this.city        = IOUtils.prompt("Enter new City: ");
-    this.state       = IOUtils.prompt("Enter new State: ");
-    this.zipcode     = parseInt(IOUtils.prompt("Enter new Zipcode: "));
-    this.phoneNumber = IOUtils.prompt("Enter new Phone Number: ");
-    this.email       = IOUtils.prompt("Enter new Email: ");
+    ContactInputHelper.updateContactFields(this);
   }
 
   /**
