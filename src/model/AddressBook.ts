@@ -7,6 +7,7 @@ export class AddressBook {
   private contacts: ContactPerson[] = [];
   private cityMap: Map<string, ContactPerson[]> = new Map();
   private stateMap: Map<string, ContactPerson[]> = new Map();
+  
 
   private updateMaps(contact: ContactPerson): void {
     const city = contact.city.toLowerCase();

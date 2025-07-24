@@ -9,8 +9,7 @@ export class IOUtils {
   }
 
   static log(message: string, success: boolean = true): void {
-    const prefix = success ? "✅" : "❌";
-    console.log(`${prefix} ${message}`);
+    console.log(` ${message}`);
   }
 
   static displayContactsList(header: string, contacts: ContactPerson[]): void {

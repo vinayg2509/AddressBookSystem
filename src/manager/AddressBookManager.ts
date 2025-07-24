@@ -40,7 +40,9 @@ export class AddressBookManager {
       IOUtils.log(`📘 ${name}`);
     });
 
-    const selectedName = IOUtils.prompt("Enter name of Address Book to select: ");
+    const selectedName = IOUtils.prompt(
+      "Enter name of Address Book to select: "
+    );
     if (!this.addressBooks.has(selectedName)) {
       IOUtils.log("❌ No such Address Book exists.", false);
       return;
@@ -55,7 +57,7 @@ export class AddressBookManager {
 
   findInAllBooksByCity(city: string): ContactPerson[] {
     const allContacts: ContactPerson[] = [];
-    this.addressBooks.forEach(book => {
+    this.addressBooks.forEach((book) => {
       allContacts.push(...book.findByCity(city));
     });
     return allContacts;
@@ -63,7 +65,7 @@ export class AddressBookManager {
 
   findInAllBooksByState(state: string): ContactPerson[] {
     const allContacts: ContactPerson[] = [];
-    this.addressBooks.forEach(book => {
+    this.addressBooks.forEach((book) => {
       allContacts.push(...book.findByState(state));
     });
     return allContacts;
@@ -89,6 +91,17 @@ export class AddressBookManager {
     }
   }
 
+  countBy(field: "city" | "state"): Map<string, number> {
+    const countMap = new Map<string, number>();
+    this.addressBooks.forEach((book) => {
+      book.getAllContacts().forEach((person) => {
+        const key = person[field];
+        countMap.set(key, (countMap.get(key) || 0) + 1);
+      });
+    });
+    return countMap;
+  }
+
   manageAddressBook(name: string): void {
     const addressBook = this.getBook(name);
     if (!addressBook) {
@@ -99,16 +112,17 @@ export class AddressBookManager {
     let option: string;
     do {
       console.log("\n📘 Managing Address Book");
-      console.log("1. Add Contact");
-      console.log("2. View Contacts");
-      console.log("3. Edit Contact");
-      console.log("4. Delete Contact");
-      console.log("5. Find in All Books by City");
-      console.log("6. Find in All Books by State");
-      console.log("7. View Persons Grouped by City");
-      console.log("8. View Persons Grouped by State");
-      console.log("9. Exit");
-      option = IOUtils.prompt("Choose an option: ");
+      IOUtils.log("1️⃣  ➕ Add Contact");
+      IOUtils.log("2️⃣  📒 View All Contacts");
+      IOUtils.log("3️⃣  ✏️ Edit Contact");
+      IOUtils.log("4️⃣  ❌ Delete Contact");
+      IOUtils.log("5️⃣  🏙️ View Contacts by City");
+      IOUtils.log("6️⃣  🗺️ View Contacts by State");
+      IOUtils.log("7️⃣  🔢 Count Contacts by City");
+      IOUtils.log("8️⃣  🔢 Count Contacts by State");
+      IOUtils.log("9️⃣  🔙 Back to Main Menu");
+
+      option = IOUtils.prompt("Enter your choice: ");
 
       switch (option) {
         case "1":
@@ -121,57 +135,70 @@ export class AddressBookManager {
           break;
 
         case "2":
-          IOUtils.displayContactsList("All Contacts", addressBook.getAllContacts());
+          IOUtils.displayContactsList(
+            "All Contacts",
+            addressBook.getAllContacts()
+          );
           break;
 
         case "3":
-          const editName = IOUtils.prompt("Enter First Name of contact to edit: ");
+          const editName = IOUtils.prompt(
+            "Enter First Name of contact to edit: "
+          );
           addressBook.editContact(editName);
           break;
 
         case "4":
-          const delName = IOUtils.prompt("Enter First Name of contact to delete: ");
+          const delName = IOUtils.prompt(
+            "Enter First Name of contact to delete: "
+          );
           addressBook.deleteContact(delName);
           break;
 
         case "5":
-          const cityAll = IOUtils.prompt("Enter City to search across all books: ");
-          IOUtils.displayContactsList(`All Books - Contacts in City: ${cityAll}`, this.findInAllBooksByCity(cityAll));
-          break;
-
-        case "6":
-          const stateAll = IOUtils.prompt("Enter State to search across all books: ");
-          IOUtils.displayContactsList(`All Books - Contacts in State: ${stateAll}`, this.findInAllBooksByState(stateAll));
-          break;
-
-        case "7":
           this.displayGroupedContacts(addressBook.getCityWiseMap(), "City");
           break;
 
-        case "8":
+        case "6":
           this.displayGroupedContacts(addressBook.getStateWiseMap(), "State");
           break;
+
+        case "7":
+          const cityCounts = this.countBy("city");
+          IOUtils.log("🏙️ Contact Count by City:");
+          cityCounts.forEach((count, city) => {
+            IOUtils.log(`   📍 ${city}: ${count} contact(s)`);
+          });
+          break;
+
+        case "8":
+          const stateCounts = this.countBy("state");
+          IOUtils.log("🗺️ Contact Count by State:");
+          stateCounts.forEach((count, state) => {
+            IOUtils.log(`   🏞️ ${state}: ${count} contact(s)`);
+          });
+          break;
+
         case "9":
-          IOUtils.log("Exiting address book management.");
+          IOUtils.log("Back to Main Menu.");
           break;
         default:
           IOUtils.log("Invalid option. Please try again.", false);
       }
-    } while (option !== "7");
+    } while (option !== "9");
   }
 
-private displayGroupedContacts(
-  groupMap: Map<string, ContactPerson[]>,
-  label: string
-): void {
-  if (groupMap.size === 0) {
-    IOUtils.log(`📭 No contacts grouped by ${label}.`, false);
-    return;
+  private displayGroupedContacts(
+    groupMap: Map<string, ContactPerson[]>,
+    label: string
+  ): void {
+    if (groupMap.size === 0) {
+      IOUtils.log(`📭 No contacts grouped by ${label}.`, false);
+      return;
+    }
+
+    groupMap.forEach((contacts, groupKey) => {
+      IOUtils.displayContactsList(`\n📌 ${label}: ${groupKey}`, contacts);
+    });
   }
-
-  groupMap.forEach((contacts, groupKey) => {
-    IOUtils.displayContactsList(`\n📌 ${label}: ${groupKey}`, contacts);
-  });
-}
-
 }
