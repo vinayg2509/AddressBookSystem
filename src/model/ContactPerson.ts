@@ -19,8 +19,16 @@ export class ContactPerson {
   updateDetails(newData: Required<ContactPerson>) {
     Object.assign(this, newData);
   }
+toString(): string {
+  return `
+👤 Name        : ${this.getFullName()}
+🏠 Address     : ${this.address}
+🏙️ City        : ${this.city}
+🌆 State       : ${this.state}
+📮 Zip Code    : ${this.zip}
+📞 Phone       : ${this.phoneNumber}
+✉️  Email       : ${this.email}
+─────────────────────────────────────`;
+}
 
-  toString(): string {
-    return `${this.getFullName()}, ${this.address}, ${this.city}, ${this.state} - ${this.zip}, 📞 ${this.phoneNumber}, ✉️ ${this.email}`;
-  }
 }
