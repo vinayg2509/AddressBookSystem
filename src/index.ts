@@ -25,8 +25,9 @@ class AddressBookMain {
       IOUtils.log("5. Count Contacts by City");
       IOUtils.log("6. Count Contacts by State");
       IOUtils.log("7. Sort Contacts by Name/City/State/Zip");
-      IOUtils.log("8. Load Contacts from File");
-      IOUtils.log("9. Exit");
+      IOUtils.log("8. Load Contacts from text File");
+      IOUtils.log("9. Load Contacts from CSV File");
+      IOUtils.log("10. Exit");
 
       const choice = parseInt(IOUtils.prompt("Enter your choice: "));
 
@@ -75,11 +76,14 @@ class AddressBookMain {
           break;
       
         case 8:
-          const fileNameToRead = IOUtils.prompt("Enter file name to be read: ");
-          TextFileService.readFromTextFile(fileNameToRead);
+          const fileNameToRead = IOUtils.prompt("Enter text file name to be read: ");
+          TextFileService.readFromFile(fileNameToRead);
           break;
-
-        case 9:
+         case 9:
+          const csvFileNameToRead = IOUtils.prompt("Enter csv file name to be read: ");
+          TextFileService.readFromFile(csvFileNameToRead);
+          break;
+        case 10:
           IOUtils.log("👋 Exiting Address Book Program.");
           return;
 

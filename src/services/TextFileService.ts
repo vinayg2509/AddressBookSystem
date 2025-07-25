@@ -16,7 +16,7 @@ export class TextFileService {
   }
 
   // ✅ Step 2: Write contacts to a text file
-  static writeToTextFile(fileName: string, contacts: ContactPerson[]): void {
+  static writeToFile(fileName: string, contacts: ContactPerson[]): void {
     this.ensureFolderExists(); // Ensure folder is created first
 
     const filePath = path.join(this.folderPath, fileName); // e.g. Files/addressbook.txt
@@ -31,7 +31,7 @@ export class TextFileService {
   }
 
   // ✅ Step 3: Optional - Read and display content from text file
-  static readFromTextFile(fileName: string): void {
+  static readFromFile(fileName: string): void {
     const filePath = path.join(this.folderPath, fileName);
 
     try {

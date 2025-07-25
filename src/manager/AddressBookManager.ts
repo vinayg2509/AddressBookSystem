@@ -131,12 +131,13 @@ export class AddressBookManager {
     let option: string;
     do {
       console.log("\n📘 Managing Address Book");
-      IOUtils.log("1️   Add Contact");
-      IOUtils.log("2️   View All Contacts");
-      IOUtils.log("3️   Edit Contact");
-      IOUtils.log("4️   Delete Contact");
-      IOUtils.log("5. Save Contacts to File");
-      IOUtils.log("6 🔙 Back to Main Menu");
+      IOUtils.log("1️  Add Contact");
+      IOUtils.log("2️  View All Contacts");
+      IOUtils.log("3️  Edit Contact");
+      IOUtils.log("4️  Delete Contact");
+      IOUtils.log("5. Save Contacts to text File");
+      IOUtils.log("6. Save Contacts to csv File");
+      IOUtils.log("7. 🔙 Back to Main Menu");
 
       option = IOUtils.prompt("Enter your choice: ");
 
@@ -165,20 +166,35 @@ export class AddressBookManager {
           break;
 
         case "4":
-          const delName = IOUtils.prompt("Enter First Name of contact to delete: ");
+          const delName = IOUtils.prompt(
+            "Enter First Name of contact to delete: "
+          );
           addressBook.deleteContact(delName);
           break;
-       
+
         case "5":
-          const fileNameToWrite = IOUtils.prompt("Enter file name to save (e.g., mybook.txt): ");
-          TextFileService.writeToTextFile(fileNameToWrite, addressBook.getAllContacts());
-        break;
+          const fileNameToWrite = IOUtils.prompt(
+            "Enter file name to save (e.g., mybook.txt): "
+          );
+          TextFileService.writeToFile(
+            fileNameToWrite,
+            addressBook.getAllContacts()
+          );
+          break;
         case "6":
+          const csvFileNameToWrite = IOUtils.prompt("Enter file name to save (e.g., mybook.csv): "
+          );
+          TextFileService.writeToFile(
+            csvFileNameToWrite,
+            addressBook.getAllContacts()
+          );
+          break;
+        case "7":
           IOUtils.log("🔙 Back to Main Menu.");
           break;
         default:
           IOUtils.log("Invalid option. Please try again.", false);
       }
-    } while (option !== "6");
+    } while (option !== "7");
   }
 }
