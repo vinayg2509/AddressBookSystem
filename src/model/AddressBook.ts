@@ -4,6 +4,7 @@ import { ContactInputHelper } from "../utils/ContactInputHelper";
 import {TextFileService} from "../services/TextFileService"
 
 export class AddressBook {
+ 
   private contacts: ContactPerson[] = [];
   private cityMap: Map<string, ContactPerson[]> = new Map();
   private stateMap: Map<string, ContactPerson[]> = new Map();

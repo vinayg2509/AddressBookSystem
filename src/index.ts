@@ -1,61 +1,119 @@
-
-
 // File: src/main/AddressBookMain.ts
-import { AddressBookManager } from "./manager/AddressBookManager";
-import { IOUtils } from "./utils/IOUtils";
 
-// Main class that serves as the entry point for the Address Book Program
+import { IOUtils } from './utils/IOUtils';
+import { TextFileService } from './services/TextFileService';
+import { AddressBookManager } from './manager/AddressBookManager';
+import { AddressBook } from './model/AddressBook';
+
 class AddressBookMain {
-  // Creates an instance of AddressBookManager to manage multiple address books
   private addressBookManager = new AddressBookManager();
+   private addressBooks: Map<string, AddressBook> = new Map();
 
-  // Displays a welcome message to the user
   welcomeToAddressBook(): void {
     IOUtils.log("👋 Welcome to the Address Book Program");
   }
 
-  // Main function that runs the application
   run(): void {
-    this.welcomeToAddressBook(); // Display welcome message once at start
-
-    // Infinite loop to keep displaying the main menu until user chooses to exit
+    this.welcomeToAddressBook();
 
     while (true) {
       IOUtils.log("\n📁 MAIN MENU");
       IOUtils.log("1. Create Address Book");
       IOUtils.log("2. Select Existing Address Book");
-      IOUtils.log("3. Exit");
+      IOUtils.log("3. View Contacts by City");
+      IOUtils.log("4. View Contacts by State");
+      IOUtils.log("5. Count Contacts by City");
+      IOUtils.log("6. Count Contacts by State");
+      IOUtils.log("7. Sort Contacts by Name/City/State/Zip");
+      IOUtils.log("8. Load Contacts from File");
+      IOUtils.log("9. Exit");
 
-      // Prompt user to enter their choice and convert input to number
-      const choice = parseInt(
-        this.addressBookManager.prompt(`Enter your choice: `)
-      );
+      const choice = parseInt(IOUtils.prompt("Enter your choice: "));
 
-      // Perform action based on user's choice
       switch (choice) {
         case 1:
-            const nameToAdd = this.addressBookManager.prompt("Enter name for new Address Book: ");
-            this.addressBookManager.addAddressBook(nameToAdd);
-            break;
+          const nameToAdd = IOUtils.prompt("Enter name for new Address Book: ");
+          this.addressBookManager.addAddressBook(nameToAdd);
+          break;
         case 2:
         const selectedBook = this.addressBookManager.selectAddressBook();
         if (selectedBook) {
           this.addressBookManager.manageAddressBook(selectedBook);
         }
          break;
+
         case 3:
-          // Exit the program
+          this.viewGroupedContacts("city");
+          break;
+
+        case 4:
+          this.viewGroupedContacts("state");
+          break;
+
+        case 5:
+          this.displayCounts("city");
+          break;
+
+        case 6:
+          this.displayCounts("state");
+          break;
+
+        case 7:
+          const fieldInput = IOUtils.prompt(
+            "Enter field to sort by (city/state/zip/name): "
+          ).toLowerCase();
+          if (["city", "state", "zip", "name"].includes(fieldInput)) {
+            this.addressBookManager.sortAllContacts(
+              fieldInput as "city" | "state" | "zip" | "name"
+            );
+          } else {
+            IOUtils.log(
+              "❌ Invalid input. Please enter 'city', 'state','zip', or 'name'",
+              false
+            );
+          }
+          break;
+      
+        case 8:
+          const fileNameToRead = IOUtils.prompt("Enter file name to be read: ");
+          TextFileService.readFromTextFile(fileNameToRead);
+          break;
+
+        case 9:
           IOUtils.log("👋 Exiting Address Book Program.");
           return;
 
         default:
-          // Handle invalid inputs
           IOUtils.log("❗ Invalid choice. Try again.");
       }
     }
   }
+
+  private viewGroupedContacts(field: "city" | "state"): void {
+    const allBooks = this.addressBookManager.getAllBooks();
+    allBooks.forEach((book, name) => {
+      const map =
+        field === "city" ? book.getCityWiseMap() : book.getStateWiseMap();
+      this.addressBookManager.displayGroupedContacts(
+        map,
+        field.charAt(0).toUpperCase() + field.slice(1)
+      );
+    });
+  }
+
+  private displayCounts(field: "city" | "state"): void {
+    const countMap = this.addressBookManager.countBy(field);
+    const label =
+      field === "city"
+        ? "🏙️ Contact Count by City:"
+        : "🗺️ Contact Count by State:";
+    IOUtils.log(label);
+    countMap.forEach((count, key) => {
+      IOUtils.log(`   📍 ${key}: ${count} contact(s)`);
+    });
+  }
 }
 
-// Create an instance of the main class and start the program
+// Entry point
 const addressApp = new AddressBookMain();
 addressApp.run();
