@@ -5,7 +5,7 @@ import { ContactPerson } from "../model/ContactPerson";
 
 export class TextFileService {
   // Path to the folder where files will be stored
-  private static readonly folderPath = "./src/Files";
+   static  folderPath = path.join(process.cwd(),'src','files')
 
   // ✅ Step 1: Ensure the folder exists
   static ensureFolderExists(): void {
