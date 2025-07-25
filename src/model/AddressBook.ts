@@ -1,6 +1,7 @@
 import { ContactPerson } from "./ContactPerson";
 import { IOUtils } from "../utils/IOUtils";
 import { ContactInputHelper } from "../utils/ContactInputHelper";
+import {TextFileService} from "../services/TextFileService"
 
 export class AddressBook {
   private contacts: ContactPerson[] = [];
@@ -9,31 +10,38 @@ export class AddressBook {
   private nameMap: Map<string, ContactPerson[]> = new Map();
 
   // --- Internal Methods to Manage Maps ---
- private updateMaps(contact: ContactPerson): void {
-  const city = contact.city.toLowerCase();
-  const state = contact.state.toLowerCase();
-  const name = contact.getFullName().toLowerCase();
+  private updateMaps(contact: ContactPerson): void {
+    const city = contact.city.toLowerCase();
+    const state = contact.state.toLowerCase();
+    const name = contact.getFullName().toLowerCase();
 
-  if (!this.cityMap.has(city)) this.cityMap.set(city, []);
-  if (!this.stateMap.has(state)) this.stateMap.set(state, []);
-  if (!this.nameMap.has(name)) this.nameMap.set(name, []);
+    if (!this.cityMap.has(city)) this.cityMap.set(city, []);
+    if (!this.stateMap.has(state)) this.stateMap.set(state, []);
+    if (!this.nameMap.has(name)) this.nameMap.set(name, []);
 
-  this.cityMap.get(city)!.push(contact);
-  this.stateMap.get(state)!.push(contact);
-  this.nameMap.get(name)!.push(contact);
-}
+    this.cityMap.get(city)!.push(contact);
+    this.stateMap.get(state)!.push(contact);
+    this.nameMap.get(name)!.push(contact);
+  }
 
+  private removeFromMaps(contact: ContactPerson): void {
+    const city = contact.city.toLowerCase();
+    const state = contact.state.toLowerCase();
+    const name = contact.getFullName().toLowerCase();
 
- private removeFromMaps(contact: ContactPerson): void {
-  const city = contact.city.toLowerCase();
-  const state = contact.state.toLowerCase();
-  const name = contact.getFullName().toLowerCase();
-
-  this.cityMap.set(city, (this.cityMap.get(city) || []).filter(c => c !== contact));
-  this.stateMap.set(state, (this.stateMap.get(state) || []).filter(c => c !== contact));
-  this.nameMap.set(name, (this.nameMap.get(name) || []).filter(c => c !== contact));
-}
-
+    this.cityMap.set(
+      city,
+      (this.cityMap.get(city) || []).filter((c) => c !== contact)
+    );
+    this.stateMap.set(
+      state,
+      (this.stateMap.get(state) || []).filter((c) => c !== contact)
+    );
+    this.nameMap.set(
+      name,
+      (this.nameMap.get(name) || []).filter((c) => c !== contact)
+    );
+  }
 
   // --- CRUD Operations ---
   addContact(contact: ContactPerson): void {
@@ -175,4 +183,5 @@ export class AddressBook {
     return this.stateMap;
   }
 
+ 
 }

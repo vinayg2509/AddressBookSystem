@@ -5,6 +5,7 @@ import { ContactPerson } from "../model/ContactPerson";
 import { ContactInputHelper } from "../utils/ContactInputHelper";
 import { IOUtils } from "../utils/IOUtils";
 import { Validator } from "../utils/Validator";
+import { TextFileService } from "../services/TextFileService";
 
 export class AddressBookManager {
   private addressBooks: Map<string, AddressBook> = new Map();
@@ -15,34 +16,37 @@ export class AddressBookManager {
 
   addAddressBook(name: string): void {
     if (!Validator.isNameValid(name)) {
-      IOUtils.log("Invalid Address Book name.", false);
+      IOUtils.log("❌ Invalid Address Book name.", false);
       return;
     }
 
     if (this.addressBooks.has(name)) {
-      IOUtils.log("Address Book already exists.", false);
+      IOUtils.log("❌ Address Book already exists.", false);
       return;
     }
 
     this.addressBooks.set(name, new AddressBook());
-    IOUtils.log(`Created Address Book: ${name}`);
+    IOUtils.log(`✅ Created Address Book: ${name}`);
   }
 
   selectAddressBook(): string | undefined {
     if (this.addressBooks.size === 0) {
-      IOUtils.log("No address books available.", false);
+      IOUtils.log("📭 No Address Books available.", false);
       return;
     }
 
-    const names = Array.from(this.addressBooks.keys());
-    IOUtils.log("Available Address Books:");
-    names.forEach((name) => {
-      IOUtils.log(`📘 ${name}`);
-    });
+    IOUtils.log("📘 Available Address Books:");
+    this.addressBooks.forEach((_, name) => IOUtils.log(`   📒 ${name}`));
 
     const selectedName = IOUtils.prompt(
       "Enter name of Address Book to select: "
     );
+
+    if (!Validator.isNameValid(selectedName)) {
+      IOUtils.log("❌ Invalid name format.", false);
+      return;
+    }
+
     if (!this.addressBooks.has(selectedName)) {
       IOUtils.log("❌ No such Address Book exists.", false);
       return;
@@ -57,37 +61,35 @@ export class AddressBookManager {
 
   findInAllBooksByCity(city: string): ContactPerson[] {
     const allContacts: ContactPerson[] = [];
-    this.addressBooks.forEach((book) => {
-      allContacts.push(...book.findByCity(city));
-    });
+    this.addressBooks.forEach((book) =>
+      allContacts.push(...book.findByCity(city))
+    );
     return allContacts;
   }
 
   findInAllBooksByState(state: string): ContactPerson[] {
     const allContacts: ContactPerson[] = [];
-    this.addressBooks.forEach((book) => {
-      allContacts.push(...book.findByState(state));
-    });
+    this.addressBooks.forEach((book) =>
+      allContacts.push(...book.findByState(state))
+    );
     return allContacts;
   }
 
   listAllBooks(): void {
     if (this.addressBooks.size === 0) {
-      IOUtils.log("No address books available.", false);
+      IOUtils.log("📭 No Address Books available.", false);
       return;
     }
 
-    IOUtils.log("Available Address Books:");
-    this.addressBooks.forEach((_, name) => {
-      IOUtils.log(`📘 ${name}`);
-    });
+    IOUtils.log("📘 Available Address Books:");
+    this.addressBooks.forEach((_, name) => IOUtils.log(`   📒 ${name}`));
   }
 
   deleteBook(name: string): void {
     if (this.addressBooks.delete(name)) {
-      IOUtils.log(`Deleted Address Book: ${name}`);
+      IOUtils.log(`🗑️ Deleted Address Book: ${name}`);
     } else {
-      IOUtils.log("Address Book not found.", false);
+      IOUtils.log("❌ Address Book not found.", false);
     }
   }
 
@@ -105,23 +107,25 @@ export class AddressBookManager {
   manageAddressBook(name: string): void {
     const addressBook = this.getBook(name);
     if (!addressBook) {
-      IOUtils.log("Address Book not found.", false);
+      IOUtils.log("❌ Address Book not found.", false);
       return;
     }
 
     let option: string;
     do {
       console.log("\n📘 Managing Address Book");
-      IOUtils.log("1️⃣  ➕ Add Contact");
-      IOUtils.log("2️⃣  📒 View All Contacts");
-      IOUtils.log("3️⃣  ✏️ Edit Contact");
-      IOUtils.log("4️⃣  ❌ Delete Contact");
-      IOUtils.log("5️⃣  🏙️ View Contacts by City");
-      IOUtils.log("6️⃣  🗺️ View Contacts by State");
-      IOUtils.log("7️⃣  🔢 Count Contacts by City");
-      IOUtils.log("8️⃣  🔢 Count Contacts by State");
-      IOUtils.log("9️⃣  🔤 Sort Contacts by Name/City/State/Zip");
-      IOUtils.log("🔟  🔙 Back to Main Menu");
+      IOUtils.log("1️  ➕ Add Contact");
+      IOUtils.log("2️  📒 View All Contacts");
+      IOUtils.log("3️  ✏️ Edit Contact");
+      IOUtils.log("4️  ❌ Delete Contact");
+      IOUtils.log("5️  🏙️ View Contacts by City");
+      IOUtils.log("6️  🗺️ View Contacts by State");
+      IOUtils.log("7️  🔢 Count Contacts by City");
+      IOUtils.log("8️  🔢 Count Contacts by State");
+      IOUtils.log("9️  🔤 Sort Contacts by Name/City/State/Zip");
+      IOUtils.log("10  💾 Save All Contacts to Text File");
+      IOUtils.log("11  📥 Load Contacts from Text File");
+      IOUtils.log("0️  🔙 Back to Main Menu");
 
       option = IOUtils.prompt("Enter your choice: ");
 
@@ -155,7 +159,6 @@ export class AddressBookManager {
           );
           addressBook.deleteContact(delName);
           break;
-
         case "5":
           this.displayGroupedContacts(addressBook.getCityWiseMap(), "City");
           break;
@@ -180,7 +183,6 @@ export class AddressBookManager {
           });
           break;
 
-
         case "9":
           const fieldInput = IOUtils.prompt(
             "Enter field to sort by (city/state/zip/name): "
@@ -189,9 +191,12 @@ export class AddressBookManager {
           if (
             fieldInput === "city" ||
             fieldInput === "state" ||
-            fieldInput === "zip"||fieldInput==="name"
+            fieldInput === "zip" ||
+            fieldInput === "name"
           ) {
-            this.sortAllContacts(fieldInput as "city" | "state" | "zip"|"name");
+            this.sortAllContacts(
+              fieldInput as "city" | "state" | "zip" | "name"
+            );
           } else {
             IOUtils.log(
               "❌ Invalid input. Please enter 'city', 'state','zip', or 'name",
@@ -201,15 +206,32 @@ export class AddressBookManager {
           break;
 
         case "10":
+          const fileNameToWrite = IOUtils.prompt(
+            "Enter file name to save (e.g., mybook.txt): "
+          );
+          TextFileService.writeToTextFile(
+            fileNameToWrite,
+            addressBook.getAllContacts()
+          );
+
+          break;
+
+        case "11":
+          const fileNameToRead = IOUtils.prompt("Enter file name to be read :");
+          TextFileService.readFromTextFile(fileNameToRead);
+          break;
+
+        case "0":
           IOUtils.log("🔙 Back to Main Menu.");
           break;
+
         default:
-          IOUtils.log("Invalid option. Please try again.", false);
+          IOUtils.log("❌ Invalid option. Please try again.", false);
       }
-    } while (option !== "10");
+    } while (option !== "0");
   }
 
-  private displayGroupedContacts(
+  displayGroupedContacts(
     groupMap: Map<string, ContactPerson[]>,
     label: string
   ): void {
@@ -222,8 +244,8 @@ export class AddressBookManager {
       IOUtils.displayContactsList(`\n📌 ${label}: ${groupKey}`, contacts);
     });
   }
- 
-  sortAllContacts(field: "city" | "state" | "zip"|"name"): void {
+
+  sortAllContacts(field: "city" | "state" | "zip" | "name"): void {
     const allContacts: ContactPerson[] = [];
 
     this.addressBooks.forEach((book, bookName) => {
@@ -240,11 +262,12 @@ export class AddressBookManager {
     }
 
     allContacts.sort((a, b) => {
-    if (field === "zip") return a.zip - b.zip;
-    if (field === "name") return a.getFullName().localeCompare(b.getFullName());
-    return a[field].localeCompare(b[field]);
-  });
+      if (field === "zip") return a.zip - b.zip;
+      if (field === "name")
+        return a.getFullName().localeCompare(b.getFullName());
+      return a[field].localeCompare(b[field]);
+    });
 
-    IOUtils.displayContactsList(`📚 Sorted Contacts by ${field}`,allContacts);
+    IOUtils.displayContactsList(`📚 Sorted Contacts by ${field}`, allContacts);
   }
 }
