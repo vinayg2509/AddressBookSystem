@@ -4,6 +4,7 @@ import { IOUtils } from "./utils/IOUtils";
 import { TextFileService } from "./services/TextFileService";
 import { AddressBookManager } from "./manager/AddressBookManager";
 import { AddressBook } from "./model/AddressBook";
+import { ContactPerson } from "./model/ContactPerson";
 
 class AddressBookMain {
   private addressBookManager = new AddressBookManager();
@@ -25,10 +26,8 @@ class AddressBookMain {
       IOUtils.log("5. Count Contacts by City");
       IOUtils.log("6. Count Contacts by State");
       IOUtils.log("7. Sort Contacts by Name/City/State/Zip");
-      IOUtils.log("8. Load Contacts from text File");
-      IOUtils.log("9. Load Contacts from CSV File");
-      IOUtils.log("10.Load Contacts from json File");
-      IOUtils.log("11. Exit");
+      IOUtils.log("8. Load Contacts from File");
+      IOUtils.log("9. Exit");
 
       const choice = parseInt(IOUtils.prompt("Enter your choice: "));
 
@@ -80,28 +79,14 @@ class AddressBookMain {
           const fileNameToRead = IOUtils.prompt(
             "Enter text file name to be read: "
           );
-          TextFileService.readFromFile(fileNameToRead);
-          break;
-        case 9:
-          const csvFileNameToRead = IOUtils.prompt(
-            "Enter csv file name to be read: "
-          );
-          TextFileService.readFromFile(csvFileNameToRead);
-          break;
-      case 10:
-          const jsonFileNameToRead = IOUtils.prompt(
-            "Enter json file name to be read: "
-          );
-          TextFileService.readFromJsonFile(jsonFileNameToRead);
-          break;
-        case 11:
-          IOUtils.log("👋 Exiting Address Book Program.");
-          return;
+         TextFileService.readContactsFromFile(fileNameToRead,)
+          break
 
-        default:
-          IOUtils.log("❗ Invalid choice. Try again.");
+        default:IOUtils.log("❗ Invalid choice. Try again.");return;
       }
+        
     }
+    
   }
 
   private viewGroupedContacts(field: "city" | "state"): void {

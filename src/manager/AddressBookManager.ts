@@ -136,9 +136,7 @@ export class AddressBookManager {
       IOUtils.log("3️  Edit Contact");
       IOUtils.log("4️  Delete Contact");
       IOUtils.log("5. Save Contacts to text File");
-      IOUtils.log("6. Save Contacts to csv File");
-      IOUtils.log("7. Save Contacts to json File");
-      IOUtils.log("8. 🔙 Back to Main Menu");
+      IOUtils.log("6. 🔙 Back to Main Menu");
 
       option = IOUtils.prompt("Enter your choice: ");
 
@@ -173,40 +171,23 @@ export class AddressBookManager {
           addressBook.deleteContact(delName);
           break;
 
+        
         case "5":
           const fileNameToWrite = IOUtils.prompt(
-            "Enter file name to save (e.g., mybook.txt): "
+            "Enter file name to save (e.g., mybook.json or.csv, or.txt ): "
           );
-          TextFileService.writeToFile(
+          TextFileService.writeContactsToFile(
             fileNameToWrite,
             addressBook.getAllContacts()
           );
           break;
-        case "6":
-          const csvFileNameToWrite = IOUtils.prompt(
-            "Enter file name to save (e.g., mybook.csv): "
-          );
-          TextFileService.writeToFile(
-            csvFileNameToWrite,
-            addressBook.getAllContacts()
-          );
-          break;
-        case "7":
-          const jsonFileNameToWrite = IOUtils.prompt(
-            "Enter file name to save (e.g., mybook.json): "
-          );
-          TextFileService.writeToJsonFile(
-            jsonFileNameToWrite,
-            addressBook.getAllContacts()
-          );
-          break;
           
-        case "8":
+        case "6":
           IOUtils.log("🔙 Back to Main Menu.");
           break;
         default:
           IOUtils.log("Invalid option. Please try again.", false);
       }
-    } while (option !== "8");
+    } while (option !== "6");
   }
 }

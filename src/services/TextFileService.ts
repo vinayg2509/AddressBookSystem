@@ -1,13 +1,13 @@
+// File: src/service/TextFileService.ts
+
 import * as fs from "fs";
 import * as path from "path";
 import { IOUtils } from "../utils/IOUtils";
 import { ContactPerson } from "../model/ContactPerson";
 
 export class TextFileService {
-  // Path to the folder where files will be stored
-   static  folderPath = path.join(process.cwd(),'src','files')
+  static folderPath = path.join(process.cwd(), "src", "files");
 
-  // ✅ Step 1: Ensure the folder exists
   static ensureFolderExists(): void {
     if (!fs.existsSync(this.folderPath)) {
       fs.mkdirSync(this.folderPath, { recursive: true });
@@ -15,73 +15,103 @@ export class TextFileService {
     }
   }
 
-  // ✅ Step 2: Write contacts to a text file
-  static writeToFile(fileName: string, contacts: ContactPerson[]): void {
-    this.ensureFolderExists(); // Ensure folder is created first
-
-    const filePath = path.join(this.folderPath, fileName); // e.g. Files/addressbook.txt
-    const lines = contacts.map(c => c.toString()).join("\n");
+  static writeContactsToFile(fileName: string, contacts: ContactPerson[]): void {
+    this.ensureFolderExists();
+    const filePath = path.join(this.folderPath, fileName);
+    const extension = path.extname(fileName).toLowerCase();
 
     try {
-      fs.writeFileSync(filePath, lines, "utf-8");
-      IOUtils.log(`📤 Contacts saved to text file: ${filePath}`);
+      switch (extension) {
+        case ".txt":
+          const text = contacts.map((c) => c.toString()).join("\n");
+          fs.writeFileSync(filePath, text, "utf-8");
+          IOUtils.log("📤 Contacts saved to TEXT file successfully.");
+          break;
+
+        case ".json":
+          const jsonData = JSON.stringify(contacts, null, 2);
+          fs.writeFileSync(filePath, jsonData, "utf-8");
+          IOUtils.log("📤 Contacts saved to JSON file successfully.");
+          break;
+
+        case ".csv":
+          const header = "FirstName,LastName,Address,City,State,Zip,PhoneNumber,Email";
+          const csvRows = contacts.map(
+            (c) =>
+              `${c.firstName},${c.lastName},${c.address},${c.city},${c.state},${c.zip},${c.phoneNumber},${c.email}`
+          );
+          const csvData = [header, ...csvRows].join("\n");
+          fs.writeFileSync(filePath, csvData, "utf-8");
+          IOUtils.log("📤 Contacts saved to CSV file successfully.");
+          break;
+
+        default:
+          IOUtils.log("❌ Unsupported file format. Use .txt, .json, or .csv", false);
+      }
     } catch (error: any) {
-      IOUtils.log(`❌ Failed to write to text file: ${error.message}`, false);
+      IOUtils.log(`❌ Failed to write to file: ${error.message}`, false);
     }
   }
 
-  // ✅ Step 3: Optional - Read and display content from text file
-  static readFromFile(fileName: string): void {
+  static readContactsFromFile(fileName: string): void {
     const filePath = path.join(this.folderPath, fileName);
+    const extension = path.extname(fileName).toLowerCase();
 
     try {
       if (!fs.existsSync(filePath)) {
-        IOUtils.log("📭 No text file found.");
+        IOUtils.log(`📭 No ${extension.toUpperCase()} file found.`);
         return;
       }
-      const content = fs.readFileSync(filePath, "utf-8");
-      IOUtils.log("📥 Contacts read from text file:");
-      IOUtils.log(content);
+
+      switch (extension) {
+        case ".txt":
+          const textData = fs.readFileSync(filePath, "utf-8");
+          IOUtils.log("📥 Contacts loaded from TEXT file:\n");
+          IOUtils.log(textData);
+          break;
+
+        case ".json":
+          const jsonData = fs.readFileSync(filePath, "utf-8");
+          const jsonContacts = JSON.parse(jsonData);
+          IOUtils.log("📥 Contacts loaded from JSON file:\n");
+          jsonContacts.forEach((contact: any, index: number) =>
+            IOUtils.log(`🔢 Contact #${index + 1}:\n${JSON.stringify(contact, null, 2)}\n`)
+          );
+          break;
+
+        case ".csv":
+          const csvData = fs.readFileSync(filePath, "utf-8");
+          const lines = csvData.split(/\r?\n/).filter((line) => line.trim().length > 0);
+
+          const [header, ...rows] = lines;
+          IOUtils.log("📥 Contacts loaded from CSV file:\n");
+
+          rows.forEach((line, index) => {
+            const parts = line.split(",");
+            const [
+              firstName,
+              lastName,
+              address,
+              city,
+              state,
+              zip,
+              phoneNumber,
+              email,
+            ] = parts.map((part) => part.trim());
+
+            IOUtils.log(`🔢 Contact #${index + 1}:
+👤 Name      : ${firstName} ${lastName}
+🏠 Address   : ${address}, ${city}, ${state} - ${zip}
+📞 Phone     : ${phoneNumber}
+📧 Email     : ${email}\n`);
+          });
+          break;
+
+        default:
+          IOUtils.log("❌ Unsupported file format. Use .txt, .json, or .csv", false);
+      }
     } catch (error: any) {
-      IOUtils.log(`❌ Failed to read from text file: ${error.message}`, false);
+      IOUtils.log(`❌ Failed to read from file: ${error.message}`, false);
     }
   }
-  static writeToJsonFile(fileName: string, contacts: ContactPerson[]): void {
-    this.ensureFolderExists();
-    const filePath = path.join(this.folderPath, fileName);
-
-    try {
-      fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2), "utf-8");
-      IOUtils.log(`📤 Contacts saved to JSON file: ${filePath}`);
-    } catch (error: any) {
-      IOUtils.log(`❌ Failed to write to JSON file: ${error.message}`, false);
-    }
-  }
-
-static readFromJsonFile(fileName: string): void {
-  const filePath = path.join(this.folderPath, fileName);
-
-  try {
-    if (!fs.existsSync(filePath)) {
-      IOUtils.log("📭 No JSON file found.");
-      return;
-    }
-
-    const jsonData = fs.readFileSync(filePath, "utf-8");
-    const records = JSON.parse(jsonData);
-
-    IOUtils.log("📥 Contacts loaded from JSON file:\n");
-
-    records.forEach((r: any, index: number) => {
-      IOUtils.log(`🔢 Contact #${index + 1}:\n${JSON.stringify(r, null, 2)}\n`);
-    });
-
-  } catch (error: any) {
-    IOUtils.log(`❌ Failed to read from JSON file: ${error.message}`, false);
-  }
-}
-
-
-
-
 }
