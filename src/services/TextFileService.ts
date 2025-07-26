@@ -46,4 +46,42 @@ export class TextFileService {
       IOUtils.log(`❌ Failed to read from text file: ${error.message}`, false);
     }
   }
+  static writeToJsonFile(fileName: string, contacts: ContactPerson[]): void {
+    this.ensureFolderExists();
+    const filePath = path.join(this.folderPath, fileName);
+
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(contacts, null, 2), "utf-8");
+      IOUtils.log(`📤 Contacts saved to JSON file: ${filePath}`);
+    } catch (error: any) {
+      IOUtils.log(`❌ Failed to write to JSON file: ${error.message}`, false);
+    }
+  }
+
+static readFromJsonFile(fileName: string): void {
+  const filePath = path.join(this.folderPath, fileName);
+
+  try {
+    if (!fs.existsSync(filePath)) {
+      IOUtils.log("📭 No JSON file found.");
+      return;
+    }
+
+    const jsonData = fs.readFileSync(filePath, "utf-8");
+    const records = JSON.parse(jsonData);
+
+    IOUtils.log("📥 Contacts loaded from JSON file:\n");
+
+    records.forEach((r: any, index: number) => {
+      IOUtils.log(`🔢 Contact #${index + 1}:\n${JSON.stringify(r, null, 2)}\n`);
+    });
+
+  } catch (error: any) {
+    IOUtils.log(`❌ Failed to read from JSON file: ${error.message}`, false);
+  }
+}
+
+
+
+
 }

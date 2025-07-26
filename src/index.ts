@@ -1,13 +1,13 @@
 // File: src/main/AddressBookMain.ts
 
-import { IOUtils } from './utils/IOUtils';
-import { TextFileService } from './services/TextFileService';
-import { AddressBookManager } from './manager/AddressBookManager';
-import { AddressBook } from './model/AddressBook';
+import { IOUtils } from "./utils/IOUtils";
+import { TextFileService } from "./services/TextFileService";
+import { AddressBookManager } from "./manager/AddressBookManager";
+import { AddressBook } from "./model/AddressBook";
 
 class AddressBookMain {
   private addressBookManager = new AddressBookManager();
-   private addressBooks: Map<string, AddressBook> = new Map();
+  private addressBooks: Map<string, AddressBook> = new Map();
 
   welcomeToAddressBook(): void {
     IOUtils.log("👋 Welcome to the Address Book Program");
@@ -27,7 +27,8 @@ class AddressBookMain {
       IOUtils.log("7. Sort Contacts by Name/City/State/Zip");
       IOUtils.log("8. Load Contacts from text File");
       IOUtils.log("9. Load Contacts from CSV File");
-      IOUtils.log("10. Exit");
+      IOUtils.log("10.Load Contacts from json File");
+      IOUtils.log("11. Exit");
 
       const choice = parseInt(IOUtils.prompt("Enter your choice: "));
 
@@ -37,11 +38,11 @@ class AddressBookMain {
           this.addressBookManager.addAddressBook(nameToAdd);
           break;
         case 2:
-        const selectedBook = this.addressBookManager.selectAddressBook();
-        if (selectedBook) {
-          this.addressBookManager.manageAddressBook(selectedBook);
-        }
-         break;
+          const selectedBook = this.addressBookManager.selectAddressBook();
+          if (selectedBook) {
+            this.addressBookManager.manageAddressBook(selectedBook);
+          }
+          break;
 
         case 3:
           this.viewGroupedContacts("city");
@@ -74,16 +75,26 @@ class AddressBookMain {
             );
           }
           break;
-      
+
         case 8:
-          const fileNameToRead = IOUtils.prompt("Enter text file name to be read: ");
+          const fileNameToRead = IOUtils.prompt(
+            "Enter text file name to be read: "
+          );
           TextFileService.readFromFile(fileNameToRead);
           break;
-         case 9:
-          const csvFileNameToRead = IOUtils.prompt("Enter csv file name to be read: ");
+        case 9:
+          const csvFileNameToRead = IOUtils.prompt(
+            "Enter csv file name to be read: "
+          );
           TextFileService.readFromFile(csvFileNameToRead);
           break;
-        case 10:
+      case 10:
+          const jsonFileNameToRead = IOUtils.prompt(
+            "Enter json file name to be read: "
+          );
+          TextFileService.readFromJsonFile(jsonFileNameToRead);
+          break;
+        case 11:
           IOUtils.log("👋 Exiting Address Book Program.");
           return;
 
